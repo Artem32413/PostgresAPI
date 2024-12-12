@@ -1,0 +1,15 @@
+version: '3.3'
+
+services:
+
+  db:
+    restart: always
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - ./pgdata:/postgressql/data
+    ports:
+      - 5432:5432

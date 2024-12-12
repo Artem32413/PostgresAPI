@@ -1,0 +1,183 @@
+[
+  {
+    "cars": [
+      {
+        "id": "1",
+        "brand": "Ford",
+        "model": "Focus",
+        "mileage": 5,
+        "owners": 2
+      },
+      {
+        "id": "2",
+        "brand": "Ford",
+        "model": "Fiesta",
+        "mileage": 5,
+        "owners": 20000
+      },
+      {
+        "id": "3",
+        "brand": "Toyota",
+        "model": "Camry",
+        "mileage": 120000,
+        "owners": 2
+      },
+      {
+        "id": "4",
+        "brand": "Toyota",
+        "model": "Camry",
+        "mileage": 120000,
+        "owners": 2
+      },
+      {
+        "id": "5",
+        "brand": "Honda",
+        "model": "Civic",
+        "mileage": 5,
+        "owners": 2
+      },
+      {
+        "id": "6",
+        "brand": "Nissan",
+        "model": "Leaf",
+        "mileage": 0,
+        "owners": 7
+      },
+      {
+        "id": "7",
+        "brand": "Hyundai",
+        "model": "Elantra",
+        "mileage": 9,
+        "owners": 90000000
+      },
+      {
+        "id": "8",
+        "brand": "Volkswagen",
+        "model": "Golf",
+        "mileage": 99999,
+        "owners": 5
+      },
+      {
+        "id": "9",
+        "brand": "Unknown",
+        "model": "Unknown",
+        "mileage": 0,
+        "owners": 0
+      }
+    ],
+    "furniture": [
+      {
+        "id": "1",
+        "name": "Стол",
+        "manufacturer": "IKEA",
+        "height": 75,
+        "width": 120,
+        "length": 60
+      },
+      {
+        "id": "2",
+        "name": "Стол",
+        "manufacturer": "IKEA",
+        "height": 75,
+        "width": 120,
+        "length": 60
+      },
+      {
+        "id": "3",
+        "name": "Кресло",
+        "manufacturer": "Мебельный Центр",
+        "height": 0,
+        "width": 0,
+        "length": 0
+      },
+      {
+        "id": "4",
+        "name": "Кресло",
+        "manufacturer": "Мебельный Центр",
+        "height": 0,
+        "width": 0,
+        "length": 0
+      },
+      {
+        "id": "5",
+        "name": "Диван",
+        "manufacturer": "Мебельный Центр",
+        "height": 0,
+        "width": 0,
+        "length": 0
+      }
+    ],
+    "flowers": [
+      {
+        "id": "1",
+        "name": "Роза",
+        "quantity": 200,
+        "price": 30,
+        "arrival_date": "2023-01-01"
+      },
+      {
+        "id": "2",
+        "name": "Тюльпан",
+        "quantity": 200,
+        "price": 30,
+        "arrival_date": "2023-01-01"
+      },
+      {
+        "id": "3",
+        "name": "Гвоздика",
+        "quantity": 0,
+        "price": 0,
+        "arrival_date": ""
+      },
+      {
+        "id": "4",
+        "name": "Лилия",
+        "quantity": 200,
+        "price": 30,
+        "arrival_date": "2023-01-01"
+      },
+      {
+        "id": "5",
+        "name": "Фиалка",
+        "quantity": 200,
+        "price": 30,
+        "arrival_date": "2023-01-01"
+      },
+      {
+        "id": "6",
+        "name": "Горшечное растение",
+        "quantity": 200,
+        "price": 30,
+        "arrival_date": "2023-01-01"
+      },
+      {
+        "id": "7",
+        "name": "Гербера",
+        "quantity": 200,
+        "price": 30,
+        "arrival_date": "2023-01-01"
+      },
+      {
+        "id": "8",
+        "name": "Магнолия",
+        "quantity": 200,
+        "price": 30,
+        "arrival_date": "2023-01-01"
+      },
+      {
+        "id": "9",
+        "name": "Лаванда",
+        "quantity": 777777,
+        "price": 0,
+        "arrival_date": "2023-01-01"
+      },
+      {
+        "id": "10",
+        "name": "Базилик",
+        "quantity": 0,
+        "price": 0,
+        "arrival_date": ""
+      }
+    ]
+  }
+]
