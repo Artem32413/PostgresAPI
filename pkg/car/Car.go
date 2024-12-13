@@ -1,7 +1,7 @@
 package car
 
 import (
-	r "apiGO/run"
+	// r "apiGO/run"
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
 	"encoding/json"
@@ -46,20 +46,39 @@ func GetCars(c *gin.Context) { //Get
 	c.IndentedJSON(http.StatusOK, slCar)
 }
 func GetCarsByID(c *gin.Context) { //GetID
-	_, cars, _, err := r.ReadFileGet("file.json")
+	slCar := []v.Car{}
+	id := c.Param("id")
+	database, err := db.Connect()
+
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка разбора JSON"})
-		fmt.Println(err)
+		log.Println("Ошибка подключения к базе данных:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
-	id := c.Param("id")
-	for _, a := range cars {
-		if a.ID == id {
-			c.IndentedJSON(http.StatusOK, a)
+	query := fmt.Sprintf(`SELECT * FROM "Cars" WHERE "id" = %s`, id)
+	res, err := database.Query(query)
+	if err != nil {
+		log.Println("Ошибка подключения данных:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		return
+	}
+	if res.Next() {
+		strCar := v.Car{}
+
+		err = res.Scan(&strCar.ID, &strCar.Brand, &strCar.Model, &strCar.Mileage, &strCar.Owners)
+		if err != nil {
+			log.Println("Ошибка чтения из БД:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка чтения из БД"})
 			return
 		}
+		slCar = append(slCar, strCar)
+
+		fmt.Println(strCar)
+		c.IndentedJSON(http.StatusOK, slCar)
+	}else{
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
+	defer database.Close()
 }
 func DeleteEventByID1(events []v.Car, id int) []v.Car {
 	idInt := strconv.Itoa(id)
