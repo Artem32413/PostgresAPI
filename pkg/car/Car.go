@@ -38,7 +38,6 @@ func GetCars(c *gin.Context) { //Get
 			return
 		}
 		slCar = append(slCar, strCar)
-		fmt.Println(slCar)
 	}
 	defer database.Close()
 	c.IndentedJSON(http.StatusOK, slCar)
@@ -70,8 +69,6 @@ func GetCarsByID(c *gin.Context) { //GetID
 			return
 		}
 		slCar = append(slCar, strCar)
-
-		fmt.Println(strCar)
 		c.IndentedJSON(http.StatusOK, slCar)
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
@@ -109,7 +106,6 @@ func DeletedById(c *gin.Context) { //DeleteID
 	defer database.Close()
 }
 func PostCars(c *gin.Context) { //Post
-	id := c.Param("id")
 	database, err := db.Connect()
 
 	if err != nil {
@@ -117,31 +113,33 @@ func PostCars(c *gin.Context) { //Post
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
-	selectId := fmt.Sprintf(`SELECT id FROM "Cars" WHERE "id" = %s`, id)
-	res, err := database.Query(selectId)
-	if err != nil {
-		log.Println("Ошибка подключения данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка id"})
+
+	var updateRequest v.Car
+	if err := c.ShouldBindJSON(&updateRequest); err != nil {
+		log.Println("Ошибка связывания данных:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверные данные запроса"})
 		return
 	}
-	selectBrand := fmt.Sprintf(`SELECT Brand FROM "Cars" WHERE "id" = %s`, id)
-	selectModel := fmt.Sprintf(`SELECT Model FROM "Cars" WHERE "id" = %s`, id)
-	selectMileage := fmt.Sprintf(`SELECT Mileage FROM "Cars" WHERE "id" = %s`, id)
-	selectOwners := fmt.Sprintf(`SELECT Owners FROM "Cars" WHERE "id" = %s`, id)
-	fmt.Println(selectOwners)
 
-	if res.Next() {
-		param := fmt.Sprintf(`UPDATE "Cars" SET "Brand" = %s , "Model" = %s, "Mileage" = %s, "Owners" = %s `, selectBrand, selectModel, selectMileage, selectOwners)
-		res, err := database.Exec(param)
-		if err != nil {
-			log.Println("Ошибка id данных:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
-			return
-		}
-		c.IndentedJSON(http.StatusOK, res)
-	} else {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
+	fmt.Println(updateRequest)
+	param := fmt.Sprintf(`INSERT INTO "Cars" ("Brand", "Model", "Mileage", "Owners") VALUES ('%s', '%s', '%d', '%d') RETURNING id`, updateRequest.Brand, updateRequest.Model, updateRequest.Mileage, updateRequest.Owners)
+	res, err := database.Query(param)
+	if err != nil {
+		log.Println("Ошибка id данных:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		return
 	}
+	if res.Next() {
+		err = res.Scan(&updateRequest.ID)
+        if err!= nil {
+            log.Println("Ошибка чтения из БД:", err)
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка чтения из БД"})
+            return
+        }
+	}
+
+	c.IndentedJSON(http.StatusOK, updateRequest)
+
 	defer database.Close()
 }
 func PutItem(c *gin.Context) { //Put
