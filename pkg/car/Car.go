@@ -3,12 +3,9 @@ package car
 import (
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/gin-gonic/gin"
@@ -131,11 +128,11 @@ func PostCars(c *gin.Context) { //Post
 	}
 	if res.Next() {
 		err = res.Scan(&updateRequest.ID)
-        if err!= nil {
-            log.Println("Ошибка чтения из БД:", err)
-            c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка чтения из БД"})
-            return
-        }
+		if err != nil {
+			log.Println("Ошибка чтения из БД:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка чтения из БД"})
+			return
+		}
 	}
 
 	c.IndentedJSON(http.StatusOK, updateRequest)
@@ -180,89 +177,62 @@ func PutItem(c *gin.Context) { //Put
 	defer database.Close()
 }
 func PatchItem(c *gin.Context) { //Patch
-	file, err := os.Open("file.json")
+	var outstruct v.Car
+	id := c.Param("id")
+	database, err := db.Connect()
+
 	if err != nil {
-		log.Println("Ошибка открытия файла:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Файл не найден"})
+		log.Println("Ошибка подключения к базе данных:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
-	defer file.Close()
-
-	readFile, err := io.ReadAll(file)
+	selectId := fmt.Sprintf(`SELECT * FROM "Cars" WHERE "id" = %s`, id)
+	res, err := database.Query(selectId)
 	if err != nil {
-		log.Println("Ошибка чтения файла:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при чтении файла"})
+		log.Println("Ошибка подключения данных:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка id"})
 		return
 	}
+	if res.Next() {
 
-	var items []v.Inventory
-	if err := json.Unmarshal(readFile, &items); err != nil {
-		log.Println("Ошибка декодирования JSON:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при декодировании JSON"})
-		return
-	}
-
-	carsID := c.Param("id")
-	var carsToUpdate *v.Car
-	for i := range items[0].Cars {
-		if items[0].Cars[i].ID == carsID {
-			carsToUpdate = &items[0].Cars[i]
-			break
+		err = res.Scan(&outstruct.ID, &outstruct.Brand, &outstruct.Model, &outstruct.Mileage, &outstruct.Owners)
+		if err != nil {
+			log.Println("Ошибка чтения из БД:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка чтения из БД"})
+			return
 		}
+	} else {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
+		return
 	}
 
-	var updateRequest v.Car
-	if err := c.ShouldBindJSON(&updateRequest); err != nil {
+	var instruct v.Car
+	if err := c.ShouldBindJSON(&instruct); err != nil {
 		log.Println("Ошибка связывания данных:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверные данные запроса"})
 		return
 	}
-
-	if carsToUpdate != nil {
-		if updateRequest.Brand != "" {
-			carsToUpdate.Brand = updateRequest.Brand
-		}
-		if updateRequest.Model != "" {
-			carsToUpdate.Model = updateRequest.Model
-		}
-		if updateRequest.Mileage != 0 {
-			carsToUpdate.Mileage = updateRequest.Mileage
-		}
-		if updateRequest.Owners != 0 {
-			carsToUpdate.Owners = updateRequest.Owners
-		}
-
-		if err := writeFile("file.json", items); err != nil {
-			log.Println("Ошибка при записи в файл:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при записи в файл"})
-			return
-		}
-		c.JSON(http.StatusOK, carsToUpdate)
-	} else {
-		c.JSON(http.StatusNoContent, nil)
+	if instruct.Brand != "" {
+		outstruct.Brand = instruct.Brand
 	}
-
-	if err := writeFile("file.json", items); err != nil {
-		log.Println("Ошибка при записи в файл:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при записи в файл"})
+	if instruct.Model != "" {
+		outstruct.Model = instruct.Model
+	}
+	if instruct.Mileage != 0 {
+		outstruct.Mileage = instruct.Mileage
+	}
+	if instruct.Owners != 0 {
+		outstruct.Owners = instruct.Owners
+	}
+	fmt.Println(outstruct)
+	fmt.Println(instruct)
+	param := fmt.Sprintf(`UPDATE "Cars" SET "Brand" = '%s' , "Model" = '%s', "Mileage" = '%d', "Owners" = '%d' WHERE "id" = %s`, outstruct.Brand, outstruct.Model, outstruct.Mileage, outstruct.Owners, id)
+	_, err = database.Exec(param)
+	if err != nil {
+		log.Println("Ошибка id данных:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
-}
-func writeFile(filename string, data interface{}) error {
-	fileWrite, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		return err
-	}
-	defer fileWrite.Close()
-
-	updatedDataJSON, err := json.MarshalIndent(data, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	if _, err := fileWrite.Write(updatedDataJSON); err != nil {
-		return err
-	}
-
-	return nil
+	c.IndentedJSON(http.StatusOK, outstruct)
+	defer database.Close()
 }
