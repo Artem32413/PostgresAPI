@@ -27,7 +27,7 @@ func PostFlowers(c *gin.Context) { //Post
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверные данные запроса"})
 		return
 	}
-	param := fmt.Sprintf(`INSERT INTO "Flowers" ("Brand", "Model", "Mileage", "Owners") VALUES ('%s', '%d', '%d', '%s') RETURNING id`, updateRequest.Name, updateRequest.Quantity, updateRequest.Price, updateRequest.ArrivalDate)
+	param := fmt.Sprintf(`INSERT INTO "Flowers" ("Name", "Quantity", "Price", "ArrivalDate") VALUES ('%s', '%d', '%d', '%s') RETURNING id`, updateRequest.Name, updateRequest.Quantity, updateRequest.Price, updateRequest.ArrivalDate)
 	res, err := database.Query(param)
 	if err != nil {
 		log.Println("Ошибка id данных:", err)
