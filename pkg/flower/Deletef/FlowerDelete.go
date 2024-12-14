@@ -1,4 +1,4 @@
-package delete
+package deletef
 
 import (
 	db "apiGO/run/postgres"

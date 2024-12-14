@@ -1,4 +1,5 @@
-package delete
+package deletefu
+
 import (
 	db "apiGO/run/postgres"
 	
@@ -18,7 +19,7 @@ func DeletedById(c *gin.Context) { //DeleteID
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
-	selectId := fmt.Sprintf(`SELECT id FROM "Cars" WHERE "id" = %s`, id)
+	selectId := fmt.Sprintf(`SELECT id FROM "Furnitures" WHERE "id" = %s`, id)
 	res, err := database.Query(selectId)
 	if err != nil {
 		log.Println("Ошибка подключения данных:", err)
@@ -26,7 +27,7 @@ func DeletedById(c *gin.Context) { //DeleteID
 		return
 	}
 	if res.Next() {
-		query := fmt.Sprintf(`DELETE FROM "Cars" WHERE "id" = %s`, id)
+		query := fmt.Sprintf(`DELETE FROM "Furnitures" WHERE "id" = %s`, id)
 		res, err := database.Exec(query)
 		if err != nil {
 			log.Println("Ошибка id данных:", err)

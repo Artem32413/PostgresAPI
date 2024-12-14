@@ -1,8 +1,5 @@
 package router
 import (
-	f "apiGO/pkg/flower"
-	
-	fu "apiGO/pkg/furniture"
 	fuGet "apiGO/pkg/car/get"
 	fuGetID "apiGO/pkg/car/getid"
 	fuDelete "apiGO/pkg/car/delete"
@@ -16,6 +13,13 @@ import (
 	fuPost2 "apiGO/pkg/flower/postf"
 	fuPut2 "apiGO/pkg/flower/putf"
 	fuPatch2 "apiGO/pkg/flower/patchf"
+
+	fuGet3 "apiGO/pkg/furniture/getfu"
+	fuGetID3 "apiGO/pkg/furniture/getidfu"
+	fuDelete3 "apiGO/pkg/furniture/deletefu"
+	fuPost3 "apiGO/pkg/furniture/postfu"
+	fuPut3 "apiGO/pkg/furniture/putfu"
+	fuPatch3 "apiGO/pkg/furniture/patchfu"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/gin-gonic/gin"
@@ -38,11 +42,11 @@ func Run(){
 	router.PUT("/cars/:id", fuPut.PutItem)
 	router.PATCH("/cars/:id", fuPatch.PatchItem)
 	//furniture
-	router.GET("/furniture", fu.GetFurnitures)
-	router.GET("/furniture/:id", fu.GetFurnitureByID)
-	router.DELETE("/furniture/:id", fu.DeletedById)
-	router.POST("/furniture", fu.PostFurnitures)
-	router.PUT("/furniture/:id", fu.PutItem)
-	router.PATCH("/furniture/:id", fu.PatchItem)
+	router.GET("/furniture", fuGet3.GetFurnitures)
+	router.GET("/furniture/:id", fuGetID3.GetFurnituresByID)
+	router.DELETE("/furniture/:id", fuDelete3.DeletedById)
+	router.POST("/furniture", fuPost3.PostFurnitures)
+	router.PUT("/furniture/:id", fuPut3.PutItem)
+	router.PATCH("/furniture/:id", fuPatch3.PatchItem)
 	router.Run(":8080")
 }
