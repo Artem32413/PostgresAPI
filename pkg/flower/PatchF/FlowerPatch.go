@@ -22,6 +22,7 @@ func PatchItem(c *gin.Context) { //Patch
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
+	defer database.Close()
 	selectId := fmt.Sprintf(`SELECT * FROM "Flowers" WHERE "id" = %s`, id)
 	res, err := database.Query(selectId)
 	if err != nil {
@@ -62,7 +63,7 @@ func PatchItem(c *gin.Context) { //Patch
 	}
 	fmt.Println(outstruct)
 	fmt.Println(instruct)
-	param := fmt.Sprintf(`UPDATE "Flowers" SET "Name" = '%s' , "Quantity" = '%s', "Price" = '%d', "ArrivalDate" = '%d' WHERE "id" = %s`, outstruct.Name, outstruct.Quantity, outstruct.Price, outstruct.ArrivalDate, id)
+	param := fmt.Sprintf(`UPDATE "Flowers" SET "Name" = '%s' , "Quantity" = '%d', "Price" = '%d', "ArrivalDate" = '%s' WHERE "id" = %s`, outstruct.Name, outstruct.Quantity, outstruct.Price, outstruct.ArrivalDate, id)
 	_, err = database.Exec(param)
 	if err != nil {
 		log.Println("Ошибка id данных:", err)
@@ -70,5 +71,5 @@ func PatchItem(c *gin.Context) { //Patch
 		return
 	}
 	c.IndentedJSON(http.StatusOK, outstruct)
-	defer database.Close()
+	
 }

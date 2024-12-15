@@ -20,14 +20,14 @@ func PostFlowers(c *gin.Context) { //Post
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
-
+	defer database.Close()
 	var updateRequest v.Flower
 	if err := c.ShouldBindJSON(&updateRequest); err != nil {
 		log.Println("Ошибка связывания данных:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверные данные запроса"})
 		return
 	}
-	param := fmt.Sprintf(`INSERT INTO "Flowers" ("Name", "Quantity", "Price", "ArrivalDate") VALUES ('%s', '%d', '%d', '%s') RETURNING id`, updateRequest.Name, updateRequest.Quantity, updateRequest.Price, updateRequest.ArrivalDate)
+	param := fmt.Sprintf(`INSERT INTO "Flowers" ("Name", "Quantity", "Price", "Arrivaldate") VALUES ('%s', '%d', '%d', '%s') RETURNING id`, updateRequest.Name, updateRequest.Quantity, updateRequest.Price, updateRequest.ArrivalDate)
 	res, err := database.Query(param)
 	if err != nil {
 		log.Println("Ошибка id данных:", err)
@@ -43,5 +43,5 @@ func PostFlowers(c *gin.Context) { //Post
 		}
 	}
 	c.IndentedJSON(http.StatusOK, updateRequest)
-	defer database.Close()
+	
 }

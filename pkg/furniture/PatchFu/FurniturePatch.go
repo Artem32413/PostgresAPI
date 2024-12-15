@@ -22,6 +22,7 @@ func PatchItem(c *gin.Context) { //Patch
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
+	defer database.Close()
 	selectId := fmt.Sprintf(`SELECT * FROM "Furnitures" WHERE "id" = %s`, id)
 	res, err := database.Query(selectId)
 	if err != nil {
@@ -73,5 +74,5 @@ func PatchItem(c *gin.Context) { //Patch
 		return
 	}
 	c.IndentedJSON(http.StatusOK, outstruct)
-	defer database.Close()
+	
 }

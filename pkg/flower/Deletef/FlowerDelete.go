@@ -19,6 +19,7 @@ func DeletedById(c *gin.Context) { //DeleteID
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
+	defer database.Close()
 	selectId := fmt.Sprintf(`SELECT id FROM "Flowers" WHERE "id" = %s`, id)
 	res, err := database.Query(selectId)
 	if err != nil {
@@ -38,5 +39,5 @@ func DeletedById(c *gin.Context) { //DeleteID
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
 	}
-	defer database.Close()
+	
 }

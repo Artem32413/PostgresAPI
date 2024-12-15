@@ -20,6 +20,7 @@ func GetCarsByID(c *gin.Context) { //GetID
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
+	defer database.Close()
 	query := fmt.Sprintf(`SELECT * FROM "Cars" WHERE "id" = %s`, id)
 	res, err := database.Query(query)
 	if err != nil {
@@ -41,5 +42,5 @@ func GetCarsByID(c *gin.Context) { //GetID
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
 	}
-	defer database.Close()
+	
 }

@@ -18,6 +18,7 @@ func GetFurnitures(c *gin.Context) { //Get
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
+	defer database.Close()
 	res, err := database.Query(`SELECT * FROM "Furnitures"`)
 	if err != nil {
 		log.Println("Ошибка подключения данных:", err)
@@ -34,6 +35,6 @@ func GetFurnitures(c *gin.Context) { //Get
 		}
 		slFurniture = append(slFurniture, strFurniture)
 	}
-	defer database.Close()
+	
 	c.IndentedJSON(http.StatusOK, slFurniture)
 }

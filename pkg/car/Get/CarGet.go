@@ -1,4 +1,5 @@
 package get
+
 import (
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
@@ -12,12 +13,12 @@ import (
 func GetCars(c *gin.Context) { //Get
 	slCar := []v.Car{}
 	database, err := db.Connect()
-
 	if err != nil {
 		log.Println("Ошибка подключения к базе данных:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
+	defer database.Close()
 	res, err := database.Query(`SELECT * FROM "Cars"`)
 	if err != nil {
 		log.Println("Ошибка подключения данных:", err)
@@ -34,6 +35,5 @@ func GetCars(c *gin.Context) { //Get
 		}
 		slCar = append(slCar, strCar)
 	}
-	defer database.Close()
 	c.IndentedJSON(http.StatusOK, slCar)
 }

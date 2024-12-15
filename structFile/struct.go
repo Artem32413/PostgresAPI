@@ -22,7 +22,7 @@ type Flower struct {
     Name        string `json:"name"`  
     Quantity    int    `json:"quantity"`  
     Price       int    `json:"price"`  
-    ArrivalDate string `json:"arrival_date"`  
+    ArrivalDate string `json:"arrivaldate"`  
 }  
 type Inventory struct {  
     Cars      []Car     `json:"cars"`     

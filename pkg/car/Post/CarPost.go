@@ -20,7 +20,7 @@ func PostCars(c *gin.Context) { //Post
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
-
+	defer database.Close()
 	var updateRequest v.Car
 	if err := c.ShouldBindJSON(&updateRequest); err != nil {
 		log.Println("Ошибка связывания данных:", err)
@@ -46,6 +46,4 @@ func PostCars(c *gin.Context) { //Post
 	}
 
 	c.IndentedJSON(http.StatusOK, updateRequest)
-
-	defer database.Close()
 }

@@ -1,4 +1,5 @@
 package getf
+
 import (
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
@@ -7,17 +8,22 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func GetFlowers(c *gin.Context) { //Get
+	logger, _:= zap.NewDevelopment()
+	defer logger.Sync()
 	slFlower := []v.Flower{}
 	database, err := db.Connect()
 
 	if err != nil {
-		log.Println("Ошибка подключения к базе данных:", err)
+		logger.Error("Ошибка подключения к базе данных:",
+		zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
+	defer database.Close()
 	res, err := database.Query(`SELECT * FROM "Flowers"`)
 	if err != nil {
 		log.Println("Ошибка подключения данных:", err)
@@ -34,6 +40,7 @@ func GetFlowers(c *gin.Context) { //Get
 		}
 		slFlower = append(slFlower, strFlower)
 	}
-	defer database.Close()
+	
+	logger.Info("Успешно")
 	c.IndentedJSON(http.StatusOK, slFlower)
 }

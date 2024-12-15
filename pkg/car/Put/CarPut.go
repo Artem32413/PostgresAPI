@@ -19,6 +19,7 @@ func PutItem(c *gin.Context) { //Put
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
+	defer database.Close()
 	selectId := fmt.Sprintf(`SELECT * FROM "Cars" WHERE "id" = %s`, id)
 	res, err := database.Query(selectId)
 	if err != nil {
@@ -45,5 +46,5 @@ func PutItem(c *gin.Context) { //Put
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
 	}
-	defer database.Close()
+	
 }
