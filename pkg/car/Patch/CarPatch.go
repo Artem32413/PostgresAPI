@@ -1,6 +1,7 @@
 package Patch
 
 import (
+	con "apiGO/run/constLog"
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
 
@@ -18,35 +19,39 @@ func PatchItem(c *gin.Context) { //Patch
 	database, err := db.Connect()
 
 	if err != nil {
-		log.Println("Ошибка подключения к базе данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrDB, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
-	defer database.Close()
+	if err := database.Close(); err != nil {
+		log.Println(con.ErrDBClose, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
+		return
+	}
 	selectId := fmt.Sprintf(`SELECT * FROM "Cars" WHERE "id" = %s`, id)
 	res, err := database.Query(selectId)
 	if err != nil {
-		log.Println("Ошибка подключения данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка id"})
+		log.Println(con.ErrNotConnect, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 		return
 	}
 	if res.Next() {
 
 		err = res.Scan(&outstruct.ID, &outstruct.Brand, &outstruct.Model, &outstruct.Mileage, &outstruct.Owners)
 		if err != nil {
-			log.Println("Ошибка чтения из БД:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка чтения из БД"})
+			log.Println(con.ErrInternal, err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrInternal})
 			return
 		}
 	} else {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 		return
 	}
 
 	var instruct v.Car
 	if err := c.ShouldBindJSON(&instruct); err != nil {
-		log.Println("Ошибка связывания данных:", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверные данные запроса"})
+		log.Println(con.ErrInternal, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": con.ErrInvalidData})
 		return
 	}
 	if instruct.Brand != "" {
@@ -66,8 +71,8 @@ func PatchItem(c *gin.Context) { //Patch
 	param := fmt.Sprintf(`UPDATE "Cars" SET "Brand" = '%s' , "Model" = '%s', "Mileage" = '%d', "Owners" = '%d' WHERE "id" = %s`, outstruct.Brand, outstruct.Model, outstruct.Mileage, outstruct.Owners, id)
 	_, err = database.Exec(param)
 	if err != nil {
-		log.Println("Ошибка id данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrNotFound, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 		return
 	}
 	c.IndentedJSON(http.StatusOK, outstruct)

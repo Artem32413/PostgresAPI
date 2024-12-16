@@ -1,6 +1,7 @@
 package Post
 
 import (
+	con "apiGO/run/constLog"
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
 
@@ -16,15 +17,19 @@ func PostCars(c *gin.Context) { //Post
 	database, err := db.Connect()
 
 	if err != nil {
-		log.Println("Ошибка подключения к базе данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrDB, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
-	defer database.Close()
+	if err := database.Close(); err != nil {
+		log.Println(con.ErrDBClose, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
+		return
+	}
 	var updateRequest v.Car
 	if err := c.ShouldBindJSON(&updateRequest); err != nil {
-		log.Println("Ошибка связывания данных:", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверные данные запроса"})
+		log.Println(con.ErrInvalidRequest, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": con.ErrInvalidData})
 		return
 	}
 
@@ -32,15 +37,15 @@ func PostCars(c *gin.Context) { //Post
 	param := fmt.Sprintf(`INSERT INTO "Cars" ("Brand", "Model", "Mileage", "Owners") VALUES ('%s', '%s', '%d', '%d') RETURNING id`, updateRequest.Brand, updateRequest.Model, updateRequest.Mileage, updateRequest.Owners)
 	res, err := database.Query(param)
 	if err != nil {
-		log.Println("Ошибка id данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrNotConnect, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 		return
 	}
 	if res.Next() {
 		err = res.Scan(&updateRequest.ID)
 		if err != nil {
-			log.Println("Ошибка чтения из БД:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка чтения из БД"})
+			log.Println(con.ErrNotConnect, err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 			return
 		}
 	}
