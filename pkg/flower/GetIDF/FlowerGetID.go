@@ -1,6 +1,7 @@
 package GetIDF
 
 import (
+	con "apiGO/run/constLog"
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
 
@@ -22,7 +23,11 @@ func GetFlowersByID(c *gin.Context) { //GetID
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
-	defer database.Close()
+	if err := database.Close(); err != nil {
+		log.Println(con.ErrDBClose, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
+		return
+	}
 	query := fmt.Sprintf(`SELECT * FROM "Flowers" WHERE "id" = %s`, id)
 	res, err := database.Query(query)
 	if err != nil {

@@ -1,6 +1,7 @@
 package PostFu
 
 import (
+	con "apiGO/run/constLog"
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
 
@@ -20,7 +21,11 @@ func PostFurnitures(c *gin.Context) { //Post
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
-	defer database.Close()
+	if err := database.Close(); err != nil {
+		log.Println(con.ErrDBClose, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
+		return
+	}
 	var updateRequest v.Furniture
 	if err := c.ShouldBindJSON(&updateRequest); err != nil {
 		log.Println("Ошибка связывания данных:", err)

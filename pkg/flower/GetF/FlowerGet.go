@@ -1,6 +1,7 @@
 package GetF
 
 import (
+	con "apiGO/run/constLog"
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
 	"log"
@@ -23,7 +24,11 @@ func GetFlowers(c *gin.Context) { //Get
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
-	defer database.Close()
+	if err := database.Close(); err != nil {
+		log.Println(con.ErrDBClose, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
+		return
+	}
 	res, err := database.Query(`SELECT * FROM "Flowers"`)
 	if err != nil {
 		log.Println("Ошибка подключения данных:", err)
