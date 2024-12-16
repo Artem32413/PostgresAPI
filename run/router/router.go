@@ -7,7 +7,6 @@ import (
 	fuPatch "apiGO/pkg/car/Patch"
 	fuPost "apiGO/pkg/car/Post"
 	fuPut "apiGO/pkg/car/Put"
-	
 
 	fuDelete2 "apiGO/pkg/flower/DeleteF"
 	fuGet2 "apiGO/pkg/flower/GetF"

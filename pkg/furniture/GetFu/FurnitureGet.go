@@ -1,6 +1,7 @@
 package GetFu
 
 import (
+	con "apiGO/run/constLog"
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
 	"log"
@@ -19,7 +20,11 @@ func GetFurnitures(c *gin.Context) { //Get
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
-	defer database.Close()
+	if err := database.Close(); err != nil {
+		log.Println(con.ErrDBClose, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
+		return
+	}
 	res, err := database.Query(`SELECT * FROM "Furnitures"`)
 	if err != nil {
 		log.Println("Ошибка подключения данных:", err)
