@@ -1,9 +1,9 @@
-package postfu
+package PostFu
 
 import (
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
-	
+
 	"fmt"
 	"log"
 	"net/http"
@@ -43,5 +43,5 @@ func PostFurnitures(c *gin.Context) { //Post
 		}
 	}
 	c.IndentedJSON(http.StatusOK, updateRequest)
-	
+
 }

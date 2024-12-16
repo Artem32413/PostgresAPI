@@ -1,4 +1,4 @@
-package get
+package Get
 
 import (
 	db "apiGO/run/postgres"

@@ -1,9 +1,9 @@
-package patchf
+package PatchF
 
 import (
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
-	
+
 	"fmt"
 	"log"
 	"net/http"
@@ -71,5 +71,5 @@ func PatchItem(c *gin.Context) { //Patch
 		return
 	}
 	c.IndentedJSON(http.StatusOK, outstruct)
-	
+
 }

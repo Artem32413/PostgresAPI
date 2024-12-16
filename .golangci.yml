@@ -1,0 +1,46 @@
+# .golangci.yml  
+linters:  
+  enable:  
+    - unused  
+    - goconst  
+    - gocyclo  
+    - gofmt  
+    - goimports  
+    - ineffassign  
+    - misspell  
+    - typecheck  
+    - unused  
+    - errcheck  
+    # Добавьте другие линтеры по необходимости  
+
+issues:  
+  exclude-use-default: false  
+  exclude:  
+    - "Error return value is not checked"  
+    - "G101"  # Пример: Игнорирование специфичной проблемы  
+    # Добавьте другие исключения по необходимости  
+
+# Чтобы настроить дополнительные параметры, вы можете добавить следующие секции  
+# Время выполнения линтеров  
+run:  
+  timeout: 5m  
+
+# Настройки формата вывода  
+output:  
+  formats: json  # Можете изменить на 'text', если хотите  
+
+# Конфигурация для настройки путей  
+paths:  
+  include:  
+    - ./...  
+  exclude:  
+    - vendor  
+
+# Настройки для конкретного линтера (например, gocyclo)  
+gocyclo:  
+  min-complexity: 15  # Минимальная сложность цикла для предупреждений  
+
+# Файлы для игнорирования  
+exclude-rules:  
+  - path: _test\.go  
+    text: "ignore all test files"

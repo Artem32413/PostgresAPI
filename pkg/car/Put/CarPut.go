@@ -1,8 +1,9 @@
-package put
+package Put
+
 import (
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
-	
+
 	"fmt"
 	"log"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/gin-gonic/gin"
 )
+
 func PutItem(c *gin.Context) { //Put
 	id := c.Param("id")
 	database, err := db.Connect()
@@ -46,5 +48,5 @@ func PutItem(c *gin.Context) { //Put
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
 	}
-	
+
 }

@@ -1,4 +1,4 @@
-package getf
+package GetF
 
 import (
 	db "apiGO/run/postgres"
@@ -12,14 +12,14 @@ import (
 )
 
 func GetFlowers(c *gin.Context) { //Get
-	logger, _:= zap.NewDevelopment()
+	logger, _ := zap.NewDevelopment()
 	defer logger.Sync()
 	slFlower := []v.Flower{}
 	database, err := db.Connect()
 
 	if err != nil {
 		logger.Error("Ошибка подключения к базе данных:",
-		zap.Error(err))
+			zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
 		return
 	}
@@ -40,7 +40,7 @@ func GetFlowers(c *gin.Context) { //Get
 		}
 		slFlower = append(slFlower, strFlower)
 	}
-	
+
 	logger.Info("Успешно")
 	c.IndentedJSON(http.StatusOK, slFlower)
 }

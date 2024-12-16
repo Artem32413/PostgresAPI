@@ -1,4 +1,4 @@
-package putfu
+package PutFu
 
 import (
 	db "apiGO/run/postgres"
@@ -48,5 +48,5 @@ func PutItem(c *gin.Context) { //Put
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
 	}
-	
+
 }

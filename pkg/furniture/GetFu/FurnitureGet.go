@@ -1,4 +1,5 @@
-package getfu
+package GetFu
+
 import (
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
@@ -35,6 +36,6 @@ func GetFurnitures(c *gin.Context) { //Get
 		}
 		slFurniture = append(slFurniture, strFurniture)
 	}
-	
+
 	c.IndentedJSON(http.StatusOK, slFurniture)
 }

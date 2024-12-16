@@ -1,9 +1,9 @@
-package post
+package Post
 
 import (
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
-	
+
 	"fmt"
 	"log"
 	"net/http"

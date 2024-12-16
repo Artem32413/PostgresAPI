@@ -1,8 +1,9 @@
-package getidfu
+package GetIDFu
+
 import (
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
-	
+
 	"fmt"
 	"log"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/gin-gonic/gin"
 )
+
 func GetFurnituresByID(c *gin.Context) { //GetID
 	slFurnitures := []v.Furniture{}
 	id := c.Param("id")
@@ -42,5 +44,5 @@ func GetFurnituresByID(c *gin.Context) { //GetID
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
 	}
-	
+
 }

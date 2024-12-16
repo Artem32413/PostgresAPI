@@ -1,7 +1,10 @@
-package delete
+package Delete
+
 import (
 	db "apiGO/run/postgres"
-	
+
+	con "apiGO/run/constLog"
+
 	"fmt"
 	"log"
 	"net/http"
@@ -14,8 +17,8 @@ func DeletedById(c *gin.Context) { //DeleteID
 	id := c.Param("id")
 	database, err := db.Connect()
 	if err != nil {
-		log.Println("Ошибка подключения к базе данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrDB, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
 	defer database.Close()
@@ -36,7 +39,7 @@ func DeletedById(c *gin.Context) { //DeleteID
 		}
 		c.IndentedJSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 	}
-	
+
 }

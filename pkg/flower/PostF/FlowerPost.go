@@ -1,9 +1,9 @@
-package postf
+package PostF
 
 import (
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
-	
+
 	"fmt"
 	"log"
 	"net/http"
@@ -43,5 +43,5 @@ func PostFlowers(c *gin.Context) { //Post
 		}
 	}
 	c.IndentedJSON(http.StatusOK, updateRequest)
-	
+
 }

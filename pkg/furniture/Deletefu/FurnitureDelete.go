@@ -1,8 +1,8 @@
-package deletefu
+package DeleteFu
 
 import (
 	db "apiGO/run/postgres"
-	
+
 	"fmt"
 	"log"
 	"net/http"
@@ -39,5 +39,5 @@ func DeletedById(c *gin.Context) { //DeleteID
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
 	}
-	
+
 }
