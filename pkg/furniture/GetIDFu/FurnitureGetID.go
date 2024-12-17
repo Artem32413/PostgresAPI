@@ -19,8 +19,8 @@ func GetFurnituresByID(c *gin.Context) { //GetID
 	database, err := db.Connect()
 
 	if err != nil {
-		log.Println("Ошибка подключения к базе данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrDB, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
 	if err := database.Close(); err != nil {
@@ -31,8 +31,8 @@ func GetFurnituresByID(c *gin.Context) { //GetID
 	query := fmt.Sprintf(`SELECT * FROM "Furnitures" WHERE "id" = %s`, id)
 	res, err := database.Query(query)
 	if err != nil {
-		log.Println("Ошибка подключения данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrNotConnect, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 		return
 	}
 	if res.Next() {
@@ -40,14 +40,14 @@ func GetFurnituresByID(c *gin.Context) { //GetID
 
 		err = res.Scan(&strFurniture.ID, &strFurniture.Name, &strFurniture.Manufacturer, &strFurniture.Height, &strFurniture.Width, &strFurniture.Length)
 		if err != nil {
-			log.Println("Ошибка чтения из БД:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка чтения из БД"})
+			log.Println(con.ErrInternal, err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrInternal})
 			return
 		}
 		slFurnitures = append(slFurnitures, strFurniture)
 		c.IndentedJSON(http.StatusOK, slFurnitures)
 	} else {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 	}
 
 }

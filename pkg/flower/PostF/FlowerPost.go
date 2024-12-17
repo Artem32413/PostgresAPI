@@ -17,8 +17,8 @@ func PostFlowers(c *gin.Context) { //Post
 	database, err := db.Connect()
 
 	if err != nil {
-		log.Println("Ошибка подключения к базе данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrDB, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
 	if err := database.Close(); err != nil {
@@ -27,23 +27,23 @@ func PostFlowers(c *gin.Context) { //Post
 		return
 	}
 	var updateRequest v.Flower
-	if err := c.ShouldBindJSON(&updateRequest); err != nil {
-		log.Println("Ошибка связывания данных:", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверные данные запроса"})
+	if err != nil {
+		log.Println(con.ErrNotConnect, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 		return
 	}
 	param := fmt.Sprintf(`INSERT INTO "Flowers" ("Name", "Quantity", "Price", "Arrivaldate") VALUES ('%s', '%d', '%d', '%s') RETURNING id`, updateRequest.Name, updateRequest.Quantity, updateRequest.Price, updateRequest.ArrivalDate)
 	res, err := database.Query(param)
 	if err != nil {
-		log.Println("Ошибка id данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrInternal, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrInternal})
 		return
 	}
 	if res.Next() {
 		err = res.Scan(&updateRequest.ID)
 		if err != nil {
-			log.Println("Ошибка чтения из БД:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка чтения из БД"})
+			log.Println(con.ErrNotConnect, err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 			return
 		}
 	}

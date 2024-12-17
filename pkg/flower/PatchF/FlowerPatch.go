@@ -19,8 +19,8 @@ func PatchItem(c *gin.Context) { //Patch
 	database, err := db.Connect()
 
 	if err != nil {
-		log.Println("Ошибка подключения к базе данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrDB, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
 	if err := database.Close(); err != nil {
@@ -31,27 +31,27 @@ func PatchItem(c *gin.Context) { //Patch
 	selectId := fmt.Sprintf(`SELECT * FROM "Flowers" WHERE "id" = %s`, id)
 	res, err := database.Query(selectId)
 	if err != nil {
-		log.Println("Ошибка подключения данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка id"})
+		log.Println(con.ErrNotConnect, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 		return
 	}
 	if res.Next() {
 
 		err = res.Scan(&outstruct.ID, &outstruct.Name, &outstruct.Quantity, &outstruct.Price, &outstruct.ArrivalDate)
 		if err != nil {
-			log.Println("Ошибка чтения из БД:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка чтения из БД"})
+			log.Println(con.ErrNotConnect, err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 			return
 		}
 	} else {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrInternal})
 		return
 	}
 
 	var instruct v.Flower
 	if err := c.ShouldBindJSON(&instruct); err != nil {
-		log.Println("Ошибка связывания данных:", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверные данные запроса"})
+		log.Println(con.ErrInternal, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrInternal})
 		return
 	}
 	if instruct.Name != "" {
@@ -71,8 +71,8 @@ func PatchItem(c *gin.Context) { //Patch
 	param := fmt.Sprintf(`UPDATE "Flowers" SET "Name" = '%s' , "Quantity" = '%d', "Price" = '%d', "ArrivalDate" = '%s' WHERE "id" = %s`, outstruct.Name, outstruct.Quantity, outstruct.Price, outstruct.ArrivalDate, id)
 	_, err = database.Exec(param)
 	if err != nil {
-		log.Println("Ошибка id данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrInternal, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrInternal})
 		return
 	}
 	c.IndentedJSON(http.StatusOK, outstruct)

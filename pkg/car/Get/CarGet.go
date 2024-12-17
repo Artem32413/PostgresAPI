@@ -14,6 +14,7 @@ import (
 func GetCars(c *gin.Context) { //Get
 	slCar := []v.Car{}
 	database, err := db.Connect()
+	
 	if err != nil {
 		log.Println(con.ErrDB, err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})

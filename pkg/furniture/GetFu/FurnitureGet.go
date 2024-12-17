@@ -16,8 +16,8 @@ func GetFurnitures(c *gin.Context) { //Get
 	database, err := db.Connect()
 
 	if err != nil {
-		log.Println("Ошибка подключения к базе данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrDB, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
 	if err := database.Close(); err != nil {
@@ -27,16 +27,16 @@ func GetFurnitures(c *gin.Context) { //Get
 	}
 	res, err := database.Query(`SELECT * FROM "Furnitures"`)
 	if err != nil {
-		log.Println("Ошибка подключения данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrNotConnect, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 		return
 	}
 	for res.Next() {
 		strFurniture := v.Furniture{}
 		err = res.Scan(&strFurniture.ID, &strFurniture.Name, &strFurniture.Manufacturer, &strFurniture.Height, &strFurniture.Width, &strFurniture.Length)
 		if err != nil {
-			log.Println("Ошибка чтения из БД:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка чтения из БД"})
+			log.Println(con.ErrInternal, err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrInternal})
 			return
 		}
 		slFurniture = append(slFurniture, strFurniture)

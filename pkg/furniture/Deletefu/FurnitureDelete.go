@@ -15,9 +15,10 @@ import (
 func DeletedById(c *gin.Context) { //DeleteID
 	id := c.Param("id")
 	database, err := db.Connect()
+
 	if err != nil {
-		log.Println("Ошибка подключения к базе данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrDB, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
 	if err := database.Close(); err != nil {
@@ -28,21 +29,21 @@ func DeletedById(c *gin.Context) { //DeleteID
 	selectId := fmt.Sprintf(`SELECT id FROM "Furnitures" WHERE "id" = %s`, id)
 	res, err := database.Query(selectId)
 	if err != nil {
-		log.Println("Ошибка подключения данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка id"})
+		log.Println(con.ErrNotConnect, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 		return
 	}
 	if res.Next() {
 		query := fmt.Sprintf(`DELETE FROM "Furnitures" WHERE "id" = %s`, id)
 		res, err := database.Exec(query)
 		if err != nil {
-			log.Println("Ошибка id данных:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+			log.Println(con.ErrInternal, err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrInternal})
 			return
 		}
 		c.IndentedJSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "По такому id данные не найдены"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrInternal})
 	}
 
 }

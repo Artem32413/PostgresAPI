@@ -9,19 +9,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 )
 
 func GetFlowers(c *gin.Context) { //Get
-	logger, _ := zap.NewDevelopment()
-	defer logger.Sync()
 	slFlower := []v.Flower{}
 	database, err := db.Connect()
 
 	if err != nil {
-		logger.Error("Ошибка подключения к базе данных:",
-			zap.Error(err))
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrDB, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
 	if err := database.Close(); err != nil {
@@ -31,21 +27,20 @@ func GetFlowers(c *gin.Context) { //Get
 	}
 	res, err := database.Query(`SELECT * FROM "Flowers"`)
 	if err != nil {
-		log.Println("Ошибка подключения данных:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка подключения к базе данных"})
+		log.Println(con.ErrNotConnect, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 		return
 	}
 	for res.Next() {
 		strFlower := v.Flower{}
 		err = res.Scan(&strFlower.ID, &strFlower.Name, &strFlower.Quantity, &strFlower.Price, &strFlower.ArrivalDate)
 		if err != nil {
-			log.Println("Ошибка чтения из БД:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка чтения из БД"})
+			log.Println(con.ErrInternal, err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrInternal})
 			return
 		}
 		slFlower = append(slFlower, strFlower)
 	}
 
-	logger.Info("Успешно")
 	c.IndentedJSON(http.StatusOK, slFlower)
 }
