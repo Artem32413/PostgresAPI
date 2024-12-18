@@ -23,11 +23,7 @@ func GetCarsByID(c *gin.Context) { //GetID
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
-	if err := database.Close(); err != nil {
-		log.Println(con.ErrDBClose, err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
-		return
-	}
+
 	query := fmt.Sprintf(`SELECT * FROM "Cars" WHERE "id" = %s`, id)
 	res, err := database.Query(query)
 	if err != nil {
@@ -49,5 +45,9 @@ func GetCarsByID(c *gin.Context) { //GetID
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 	}
-
+	if err := database.Close(); err != nil {
+		log.Println(con.ErrDBClose, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
+		return
+	}
 }

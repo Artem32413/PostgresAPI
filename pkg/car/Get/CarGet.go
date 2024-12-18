@@ -14,17 +14,13 @@ import (
 func GetCars(c *gin.Context) { //Get
 	slCar := []v.Car{}
 	database, err := db.Connect()
-	
+
 	if err != nil {
 		log.Println(con.ErrDB, err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
-	if err := database.Close(); err != nil {
-		log.Println(con.ErrDBClose, err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
-		return
-	}
+
 	res, err := database.Query(`SELECT * FROM "Cars"`)
 	if err != nil {
 		log.Println(con.ErrNotConnect, err)
@@ -40,6 +36,11 @@ func GetCars(c *gin.Context) { //Get
 			return
 		}
 		slCar = append(slCar, strCar)
+	}
+	if err := database.Close(); err != nil {
+		log.Println(con.ErrDBClose, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
+		return
 	}
 	c.IndentedJSON(http.StatusOK, slCar)
 }

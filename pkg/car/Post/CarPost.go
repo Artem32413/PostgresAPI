@@ -21,11 +21,7 @@ func PostCars(c *gin.Context) { //Post
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
-	if err := database.Close(); err != nil {
-		log.Println(con.ErrDBClose, err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
-		return
-	}
+
 	var updateRequest v.Car
 	if err := c.ShouldBindJSON(&updateRequest); err != nil {
 		log.Println(con.ErrInvalidRequest, err)
@@ -49,6 +45,10 @@ func PostCars(c *gin.Context) { //Post
 			return
 		}
 	}
-
+	if err := database.Close(); err != nil {
+		log.Println(con.ErrDBClose, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
+		return
+	}
 	c.IndentedJSON(http.StatusOK, updateRequest)
 }

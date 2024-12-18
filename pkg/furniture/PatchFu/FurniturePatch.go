@@ -23,11 +23,7 @@ func PatchItem(c *gin.Context) { //Patch
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
-	if err := database.Close(); err != nil {
-		log.Println(con.ErrDBClose, err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
-		return
-	}
+
 	selectId := fmt.Sprintf(`SELECT * FROM "Furnitures" WHERE "id" = %s`, id)
 	res, err := database.Query(selectId)
 	if err != nil {
@@ -78,6 +74,10 @@ func PatchItem(c *gin.Context) { //Patch
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrInternal})
 		return
 	}
+	if err := database.Close(); err != nil {
+		log.Println(con.ErrDBClose, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
+		return
+	}
 	c.IndentedJSON(http.StatusOK, outstruct)
-
 }

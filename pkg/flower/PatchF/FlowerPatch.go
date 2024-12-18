@@ -23,11 +23,7 @@ func PatchItem(c *gin.Context) { //Patch
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
-	if err := database.Close(); err != nil {
-		log.Println(con.ErrDBClose, err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
-		return
-	}
+
 	selectId := fmt.Sprintf(`SELECT * FROM "Flowers" WHERE "id" = %s`, id)
 	res, err := database.Query(selectId)
 	if err != nil {
@@ -68,13 +64,18 @@ func PatchItem(c *gin.Context) { //Patch
 	}
 	fmt.Println(outstruct)
 	fmt.Println(instruct)
-	param := fmt.Sprintf(`UPDATE "Flowers" SET "Name" = '%s' , "Quantity" = '%d', "Price" = '%d', "ArrivalDate" = '%s' WHERE "id" = %s`, outstruct.Name, outstruct.Quantity, outstruct.Price, outstruct.ArrivalDate, id)
+	param := fmt.Sprintf(`UPDATE "Flowers" SET "Name" = '%s' , "Quantity" = '%d', "Price" = '%f', "ArrivalDate" = '%s' WHERE "id" = %s`, outstruct.Name, outstruct.Quantity, outstruct.Price, outstruct.ArrivalDate, id)
 	_, err = database.Exec(param)
 	if err != nil {
 		log.Println(con.ErrInternal, err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrInternal})
 		return
 	}
-	c.IndentedJSON(http.StatusOK, outstruct)
+	if err := database.Close(); err != nil {
+		log.Println(con.ErrDBClose, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
+		return
+	}
 
+	c.IndentedJSON(http.StatusOK, outstruct)
 }

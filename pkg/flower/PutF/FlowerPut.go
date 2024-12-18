@@ -22,11 +22,7 @@ func PutItem(c *gin.Context) { //Put
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
-	if err := database.Close(); err != nil {
-		log.Println(con.ErrDBClose, err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
-		return
-	}
+
 	selectId := fmt.Sprintf(`SELECT * FROM "Flowers" WHERE "id" = %s`, id)
 	res, err := database.Query(selectId)
 	if err != nil {
@@ -42,7 +38,7 @@ func PutItem(c *gin.Context) { //Put
 		return
 	}
 	if res.Next() {
-		param := fmt.Sprintf(`UPDATE "Flowers" SET "Name" = '%s' , "Quantity" = '%d', "Price" = '%d', "ArrivalDate" = '%s' WHERE "id" = %s`, updateRequest.Name, updateRequest.Quantity, updateRequest.Price, updateRequest.ArrivalDate, id)
+		param := fmt.Sprintf(`UPDATE "Flowers" SET "Name" = '%s' , "Quantity" = '%d', "Price" = '%f', "ArrivalDate" = '%s' WHERE "id" = %s`, updateRequest.Name, updateRequest.Quantity, updateRequest.Price, updateRequest.ArrivalDate, id)
 		_, err := database.Exec(param)
 		if err != nil {
 			log.Println(con.ErrNotConnect, err)
@@ -53,5 +49,9 @@ func PutItem(c *gin.Context) { //Put
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrInternal})
 	}
-
+	if err := database.Close(); err != nil {
+		log.Println(con.ErrDBClose, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
+		return
+	}
 }

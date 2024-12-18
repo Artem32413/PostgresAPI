@@ -18,9 +18,9 @@ type Furniture struct {
 }
 
 type Flower struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Quantity    int    `json:"quantity"`
-	Price       int    `json:"price"`
-	ArrivalDate string `json:"arrivaldate"`
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	Quantity    int     `json:"quantity"`
+	Price       float64 `json:"price"`
+	ArrivalDate string  `json:"arrivaldate"`
 }

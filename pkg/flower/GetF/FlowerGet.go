@@ -20,11 +20,6 @@ func GetFlowers(c *gin.Context) { //Get
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
-	if err := database.Close(); err != nil {
-		log.Println(con.ErrDBClose, err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
-		return
-	}
 	res, err := database.Query(`SELECT * FROM "Flowers"`)
 	if err != nil {
 		log.Println(con.ErrNotConnect, err)
@@ -41,6 +36,10 @@ func GetFlowers(c *gin.Context) { //Get
 		}
 		slFlower = append(slFlower, strFlower)
 	}
-
+	if err := database.Close(); err != nil {
+		log.Println(con.ErrDBClose, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
+		return
+	}
 	c.IndentedJSON(http.StatusOK, slFlower)
 }

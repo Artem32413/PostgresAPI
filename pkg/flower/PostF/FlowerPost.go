@@ -21,18 +21,14 @@ func PostFlowers(c *gin.Context) { //Post
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
-	if err := database.Close(); err != nil {
-		log.Println(con.ErrDBClose, err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
-		return
-	}
+
 	var updateRequest v.Flower
 	if err != nil {
 		log.Println(con.ErrNotConnect, err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 		return
 	}
-	param := fmt.Sprintf(`INSERT INTO "Flowers" ("Name", "Quantity", "Price", "Arrivaldate") VALUES ('%s', '%d', '%d', '%s') RETURNING id`, updateRequest.Name, updateRequest.Quantity, updateRequest.Price, updateRequest.ArrivalDate)
+	param := fmt.Sprintf(`INSERT INTO "Flowers" ("Name", "Quantity", "Price", "Arrivaldate") VALUES ('%s', '%d', '%f', '%s') RETURNING id`, updateRequest.Name, updateRequest.Quantity, updateRequest.Price, updateRequest.ArrivalDate)
 	res, err := database.Query(param)
 	if err != nil {
 		log.Println(con.ErrInternal, err)
@@ -47,6 +43,11 @@ func PostFlowers(c *gin.Context) { //Post
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusOK, updateRequest)
+	if err := database.Close(); err != nil {
+		log.Println(con.ErrDBClose, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
+		return
+	}
 
+	c.IndentedJSON(http.StatusOK, updateRequest)
 }

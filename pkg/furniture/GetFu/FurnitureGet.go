@@ -20,11 +20,7 @@ func GetFurnitures(c *gin.Context) { //Get
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
-	if err := database.Close(); err != nil {
-		log.Println(con.ErrDBClose, err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
-		return
-	}
+
 	res, err := database.Query(`SELECT * FROM "Furnitures"`)
 	if err != nil {
 		log.Println(con.ErrNotConnect, err)
@@ -41,6 +37,10 @@ func GetFurnitures(c *gin.Context) { //Get
 		}
 		slFurniture = append(slFurniture, strFurniture)
 	}
-
+	if err := database.Close(); err != nil {
+		log.Println(con.ErrDBClose, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
+		return
+	}
 	c.IndentedJSON(http.StatusOK, slFurniture)
 }

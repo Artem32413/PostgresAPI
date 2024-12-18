@@ -9,7 +9,9 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+      
     volumes:
+      - COPY init.sql /docker-entrypoint-initdb.d/
       - ./pgdata:/postgressql/data
     ports:
       - 5432:5432

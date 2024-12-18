@@ -2,21 +2,33 @@ package postgres
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"time"
 
 	con "apiGO/run/constLog"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
 func Connect() (*sqlx.DB, error) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Ошибка загрузки .env файла")
+	}
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+	sslMode := os.Getenv("SSLMODE")
 	logger, _ := zap.NewDevelopment()
 	if err := logger.Sync(); err != nil {
 		zap.Error(err)
 	}
-	connStr := "user=postgres password=postgres dbname=postgres sslmode=disable"
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s",
+		user, password, dbName, sslMode)
 	conn, err := sqlx.Connect("postgres", connStr)
 	if err != nil {
 		logger.Error(con.ErrDBConnect,
