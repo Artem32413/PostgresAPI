@@ -30,6 +30,7 @@ func Connect() (*sqlx.DB, error) {
 	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s",
 		user, password, dbName, sslMode)
 	conn, err := sqlx.Connect("postgres", connStr)
+	fmt.Println(connStr)
 	if err != nil {
 		logger.Error(con.ErrDBConnect,
 			zap.Error(err),
