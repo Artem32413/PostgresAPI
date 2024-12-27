@@ -7,6 +7,12 @@ import (
 	fuPatch "apiGO/pkg/car/Patch"
 	fuPost "apiGO/pkg/car/Post"
 	fuPut "apiGO/pkg/car/Put"
+	
+	"context"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
 	fuDelete2 "apiGO/pkg/flower/DeleteF"
 	fuGet2 "apiGO/pkg/flower/GetF"
@@ -56,10 +62,35 @@ func Run() {
 	router.POST("/furniture", fuPost3.PostFurnitures)
 	router.PUT("/furniture/:id", fuPut3.PutItem)
 	router.PATCH("/furniture/:id", fuPatch3.PatchItem)
-	if err := router.Run(":8080"); err != nil {
-		logger.Error("Server startup error on port 8080",
-			zap.Error(err),
-			zap.Duration("backoff", time.Second),
-		)
+
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: router,
 	}
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		logger.Info("Сервер запущен на порту 8080",
+			zap.Duration("Продолжительность выполнения", time.Second),
+		)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.Error("Ошибка сервера: %s", zap.Error(err))
+		}
+	}()
+
+	<-stop
+	logger.Info("Ожидаем завершения работы...",
+		zap.Duration("Продолжительность выполнения", time.Second),
+	)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		logger.Error("Ошибка при завершении работы: %s", zap.Error(err))
+	}
+	logger.Info("Сервер завершил работу",
+		zap.Duration("Продолжительность завершения", time.Second),
+	)
 }
