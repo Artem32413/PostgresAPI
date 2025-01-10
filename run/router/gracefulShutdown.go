@@ -77,8 +77,8 @@ func GracefulShotdown() {
 		}
 	}()
 
-	fmt.Println("Сервер запущен на http://localhost:8080")
-	fmt.Println("Нажмите Ctrl+C для завершения.")
+	logger.Info("Сервер запущен")
+	logger.Info("Нажмите Ctrl+C для завершения")
 
 	<-signalChan
 	logger.Info("Ожидаем завершения работы...")
