@@ -23,12 +23,14 @@ func PostFlowers(c *gin.Context) { //Post
 	}
 
 	var updateRequest v.Flower
-	if err != nil {
-		log.Println(con.ErrNotConnect, err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
+	if err := c.ShouldBindJSON(&updateRequest); err != nil {
+		log.Println(con.ErrInvalidRequest, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": con.ErrInvalidData})
 		return
 	}
-	param := fmt.Sprintf(`INSERT INTO "Flowers" ("Name", "Quantity", "Price", "Arrivaldate") VALUES ('%s', '%d', '%f', '%s') RETURNING id`, updateRequest.Name, updateRequest.Quantity, updateRequest.Price, updateRequest.ArrivalDate)
+
+	fmt.Println(updateRequest)
+	param := fmt.Sprintf(`INSERT INTO "Flowers" ("Name", "Quantity", "Price", "ArrivalDate") VALUES ('%s', '%d', '%f', '%s') RETURNING id`, updateRequest.Name, updateRequest.Quantity, updateRequest.Price, updateRequest.ArrivalDate)
 	res, err := database.Query(param)
 	if err != nil {
 		log.Println(con.ErrInternal, err)

@@ -4,7 +4,6 @@ services:
 
   app:
     build: .
-    # command: ["/bin/wait-for-it.sh", "db:5432", "-t", "600000000", "--", "/bin/main"]
     depends_on:
       db:
         condition: service_healthy

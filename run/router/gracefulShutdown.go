@@ -28,7 +28,7 @@ func GracefulShotdown() {
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
 
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":8081",
 		Handler: router,
 	}
 
