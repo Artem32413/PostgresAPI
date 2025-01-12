@@ -15,9 +15,11 @@ import (
 )
 
 func Connect() (*sqlx.DB, error) {
+	log.Println("Connect")
 	err := godotenv.Load()
+	log.Println("Connect22")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		log.Fatal("Ошибка загрузки .env файла")
 	}
 	user := os.Getenv("DB_USER")
@@ -25,12 +27,13 @@ func Connect() (*sqlx.DB, error) {
 	dbName := os.Getenv("DB_NAME")
 	sslMode := os.Getenv("SSLMODE")
 	dbPort := os.Getenv("DB_PORT")
+	dbHost := os.Getenv("DB_HOST")
 	logger, _ := zap.NewDevelopment()
 	if err := logger.Sync(); err != nil {
 		zap.Error(err)
 	}
-	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s port=%s",
-		user, password, dbName, sslMode, dbPort)
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s port=%s host=%s",
+		user, password, dbName, sslMode, dbPort, dbHost)
 	conn, err := sqlx.Connect("postgres", connStr)
 	log.Println(connStr)
 	if err != nil {
