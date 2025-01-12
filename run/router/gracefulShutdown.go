@@ -10,7 +10,6 @@ import (
 	"time"
 
 	rou "apiGO/run/router/routers"
-	// fuGet2 "apiGO/pkg/flower/GetF"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/gin-gonic/gin"
@@ -23,10 +22,6 @@ func GracefulShotdown() {
 	if err := logger.Sync(); err != nil {
 		zap.Error(err)
 	}
-	// router.GET("/", func(c *gin.Context) {  
-	// 	c.String(200, "Hello, World!")  
-	// }) 
-	// router.GET("/flowers/", fuGet2.GetFlowers)
 	rou.RunRouters(router)
 	
 	signalChan := make(chan os.Signal, 1)

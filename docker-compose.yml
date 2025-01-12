@@ -3,7 +3,8 @@ networks:
     driver: bridge
 
 services:
-
+  postgresapp:  
+    image: artem52g/postgresapp 
   app:
     build: .
     depends_on:
