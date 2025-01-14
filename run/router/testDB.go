@@ -3,15 +3,20 @@ package router
 import (
 	con "apiGO/run/constLog"
 	db "apiGO/run/postgres"
-	"log"
+
+	"go.uber.org/zap"
 )
 
 func TestingDb() {
 	_, err := db.Connect()
-
+	logger, _ := zap.NewDevelopment()
+	if err := logger.Sync(); err != nil {
+		zap.Error(err)
+	}
 	if err != nil {
-		log.Println(con.ErrDB, "artem", err)
+		logger.Error(con.ErrDB,
+			zap.Error(err))
 		return
 	}
-	log.Println("успешно")
+	logger.Info("Успешно")
 }
