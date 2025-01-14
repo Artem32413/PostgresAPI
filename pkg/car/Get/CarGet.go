@@ -4,26 +4,33 @@ import (
 	con "apiGO/run/constLog"
 	db "apiGO/run/postgres"
 	v "apiGO/structFile"
-	"log"
+
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func GetCars(c *gin.Context) { //Get
+	logger, _ := zap.NewDevelopment()
+	if err := logger.Sync(); err != nil {
+		zap.Error(err)
+	}
 	slCar := []v.Car{}
 	database, err := db.Connect()
 
 	if err != nil {
-		log.Println(con.ErrDB, "dfhfdh", err)
+		logger.Error(con.ErrDB,
+			zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDB})
 		return
 	}
 
 	res, err := database.Query(`SELECT * FROM "Cars"`)
 	if err != nil {
-		log.Println(con.ErrNotConnect, err)
+		logger.Error(con.ErrNotConnect,
+			zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrNotFound})
 		return
 	}
@@ -31,14 +38,16 @@ func GetCars(c *gin.Context) { //Get
 		strCar := v.Car{}
 		err = res.Scan(&strCar.ID, &strCar.Brand, &strCar.Model, &strCar.Mileage, &strCar.Owners)
 		if err != nil {
-			log.Println(con.ErrInternal, err)
+			logger.Error(con.ErrInternal,
+				zap.Error(err))
 			c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrInternal})
 			return
 		}
 		slCar = append(slCar, strCar)
 	}
 	if err := database.Close(); err != nil {
-		log.Println(con.ErrDBClose, err)
+		logger.Error(con.ErrDBClose,
+			zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": con.ErrDBClose})
 		return
 	}

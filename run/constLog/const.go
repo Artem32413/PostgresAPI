@@ -15,4 +15,5 @@ const (
 	ErrAuth           = "Ошибка авторизации"
 	ErrUnprocessable  = "Неверный формат запроса"
 	ErrForbidden      = "Доступ запрещен"
+	ErrEnv            = "Ошибка загрузки .env файла"
 )
