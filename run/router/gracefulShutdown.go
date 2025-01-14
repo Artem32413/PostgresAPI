@@ -23,7 +23,7 @@ func GracefulShotdown() {
 		zap.Error(err)
 	}
 	rou.RunRouters(router)
-	
+
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
 
