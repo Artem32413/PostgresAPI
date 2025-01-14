@@ -42,9 +42,7 @@ func Connect() (*sqlx.DB, error) {
 	err = conn.Ping()
 	if err != nil {
 		logger.Error(con.ErrDBPing,
-			zap.Error(err),
-			zap.Duration("backoff", time.Second),
-		)
+			zap.Error(err))
 		return nil, fmt.Errorf("ping error")
 	}
 	return conn, nil

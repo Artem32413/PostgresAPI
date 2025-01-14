@@ -2,7 +2,6 @@ package router
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -48,7 +47,7 @@ func GracefulShotdown() {
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		fmt.Printf("Ошибка при завершении работы сервера: %v\n", err)
+		logger.Error("Ошибка при завершении работы сервера: ", zap.Error(err))
 	}
 
 	logger.Info("Сервер завершил работу")
