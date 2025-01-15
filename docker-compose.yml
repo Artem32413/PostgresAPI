@@ -1,9 +1,5 @@
 version: '3.8'
 
-networks:
-  my-network:
-    driver: bridge
-
 services:
 
   app:
@@ -11,12 +7,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    env_file:
-      - /.env
     ports:
       - 8080:8080
-    networks:
-      - my-network
 
   db:
     restart: always
@@ -35,8 +27,6 @@ services:
       timeout: 10s
     ports:
       - 5432:5432
-    networks:
-      - my-network
 
   initdb:
     image: postgres:latest 
